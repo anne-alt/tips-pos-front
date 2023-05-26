@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import OneProduct from "./OneProduct";
 import ProductsContainer from "./ProductsContainer";
 import ProductsForm from "./ProductsForm";
 
@@ -15,9 +14,8 @@ function Products(){
 
     return (
         <div>
-            <ProductsForm/>
-            {/* <ProductsContainer products={products}/> */}
-
+            <ProductsForm products={products} setProducts={setProducts}/>
+            <ProductsContainer products={products}/>
         </div>
     )
 }

@@ -3,6 +3,7 @@ import React, { useState } from "react";
 function ProductsForm(products, setProducts){
     const [formData, setFormData] = useState({
         name: "",
+        size: "",
         buying_price: "",
         quantity: "",
         selling_price: "",
@@ -34,13 +35,13 @@ function ProductsForm(products, setProducts){
           .then((newProduct) => {
             setFormData({
                 name: "",
+                size: "",
                 buying_price: "",
                 quantity: "",
                 selling_price: "",
                 category: "",
-                expiry: ""
+                expiry: "",
             })
-
             const allProducts = [...products, newProduct]
             setProducts(allProducts)
           })
@@ -57,18 +58,26 @@ function ProductsForm(products, setProducts){
                  value={formData.name}
                  placeholder="product name.."
                  className="formbox"
-               />
+                />
                 <input
                  type="input-text"
-                 name="name"
+                 name="size"
+                 onChange={handleChange}
+                 value={formData.size}
+                 placeholder="product size.."
+                 className="formbox"
+                />
+                <input
+                 type="input-text"
+                 name="buying_price"
                  onChange={handleChange}
                  value={formData.buying_price}
                  placeholder="buying price..."
                  className="formbox"
-               />
+                />
                 <input
                  type="input-text"
-                 name="name"
+                 name="selling_price"
                  onChange={handleChange}
                  value={formData.selling_price}
                  placeholder="selling price.."
@@ -76,7 +85,7 @@ function ProductsForm(products, setProducts){
                 />
                 <input
                  type="input-text"
-                 name="name"
+                 name="quantity"
                  onChange={handleChange}
                  value={formData.quantity}
                  placeholder="how many?..."
@@ -84,7 +93,7 @@ function ProductsForm(products, setProducts){
                 />
                 <input
                  type="input-text"
-                 name="name"
+                 name="category"
                  onChange={handleChange}
                  value={formData.category}
                  placeholder="category...."
@@ -92,9 +101,9 @@ function ProductsForm(products, setProducts){
                 />
                 <input
                  type="input-text"
-                 name="name"
+                 name="expiry"
                  onChange={handleChange}
-                 value={formData.expriy}
+                 value={formData.expiry}
                  placeholder="good till when?..."
                  className="formbox"
                 />
