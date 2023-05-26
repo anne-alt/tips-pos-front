@@ -1,17 +1,22 @@
 import { useEffect, useState } from "react";
+import OneProduct from "./OneProduct";
+import ProductsContainer from "./ProductsContainer";
+import ProductsForm from "./ProductsForm";
 
 
 function Products(){
-    const [product, setProduct] = useState([])
+    const [products, setProducts] = useState([])
 
     useEffect(() => {
         fetch(`/products`)
-        .then(response => response.json)
+        .then(res => res.json())
         .then(data => console.log(data))
     }, [])
 
     return (
         <div>
+            <ProductsForm/>
+            {/* <ProductsContainer products={products}/> */}
 
         </div>
     )
