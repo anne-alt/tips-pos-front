@@ -1,6 +1,8 @@
 import React from "react";
 
-function OneProduct({name, size, selling_price, quantity}){
+function OneProduct({name, size, selling_price, quantity, id}){
+
+    
 
     return(
         <div>

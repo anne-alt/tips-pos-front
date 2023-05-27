@@ -1,12 +1,28 @@
 import React from "react";
+import axios from 'axios';
 import OneProduct from "./OneProduct";
 
-function ProductsContainer({products}) {
+function ProductsContainer({products, setProducts}) {
 
-    console.log(products)
+    
 
-    const product = products.map(item => ( <OneProduct key= {item.id} name={item.name} size= {item.size} selling_price={item.selling_price} quantity={item.quantity}/>
-    ))
+    const deleteProduct = async (productId) => {
+        try {
+          await axios.delete(`/products/${productId}`);
+          setProducts(products.filter(product => product.id !== productId));
+        } catch (error) {
+          console.error('Error deleting product:', error);
+        }
+      };
+    
+
+    const product = products.map(item => {
+        return (
+        <div>
+            <OneProduct products={products} setProducts={setProducts} key= {item.id} id = {item.id} name={item.name} size= {item.size} selling_price={item.selling_price} quantity={item.quantity}/>
+            <button onClick={() => deleteProduct(item.id)}>Delete</button>
+        </div>
+    )})
 
     return(
         <div>

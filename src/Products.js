@@ -17,7 +17,7 @@ function Products(){
     return (
         <div>
             <ProductsForm products={products} setProducts={setProducts}/>
-            <ProductsContainer products={products}/>
+            <ProductsContainer products={products} setProducts={setProducts}/>
         </div>
     )
 }
