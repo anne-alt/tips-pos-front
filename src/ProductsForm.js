@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function ProductsForm(products, setProducts){
+function ProductsForm({products, setProducts}){
     const [formData, setFormData] = useState({
         name: "",
         size: "",

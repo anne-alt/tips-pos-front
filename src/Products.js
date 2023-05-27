@@ -9,7 +9,9 @@ function Products(){
     useEffect(() => {
         fetch(`/products`)
         .then(res => res.json())
-        .then(data => console.log(data))
+        .then(data => {
+            console.log(data)
+            setProducts(data)})
     }, [])
 
     return (
