@@ -18,8 +18,8 @@ function ProductsContainer({products, setProducts}) {
 
     const product = products.map(item => {
         return (
-        <div>
-            <OneProduct products={products} setProducts={setProducts} key= {item.id} id = {item.id} name={item.name} size= {item.size} selling_price={item.selling_price} quantity={item.quantity}/>
+        <div key= {item.id}>
+            <OneProduct products={products} setProducts={setProducts}  id = {item.id} name={item.name} size= {item.size} selling_price={item.selling_price} quantity={item.quantity}/>
             <button onClick={() => deleteProduct(item.id)}>Delete</button>
         </div>
     )})
