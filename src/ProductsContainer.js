@@ -22,15 +22,47 @@ function ProductsContainer({ products, setProducts }) {
         });
     }
 
-    const handleProductClick = (productId) => {
+    const handleProductClick = (productId, event) => {
+      const formElements = ['name', 'size', 'buying_price', 'quantity', 'selling_price', 'category', 'expiry'];
+  
+      if (event.target.tagName === 'INPUT' && formElements.includes(event.target.name)) {
+          // Click event originated from within the form, do not close it
+          return;
+      }
+  
       if (selectedId === productId) {
           setSelectedId(null);
+          setFormData({
+              name: "",
+              size: "",
+              buying_price: "",
+              quantity: "",
+              selling_price: "",
+              category: "",
+              expiry: ""
+          });
       } else {
           setSelectedId(productId);
+          const selectedProduct = products.find((product) => product.id === productId);
+          if (selectedProduct) {
+              setFormData({
+                  name: selectedProduct.name,
+                  size: selectedProduct.size,
+                  buying_price: selectedProduct.buying_price,
+                  quantity: selectedProduct.quantity,
+                  selling_price: selectedProduct.selling_price,
+                  category: selectedProduct.category,
+                  expiry: selectedProduct.expiry
+              });
+          }
       }
   };
 
     const handleUpdateClick = () => {
+        if (selectedId === null) {
+            return; // No product is selected, do nothing
+        }
+
         const updatedProduct = { ...formData };
 
         fetch(`/products/${selectedId}`, {
@@ -42,15 +74,6 @@ function ProductsContainer({ products, setProducts }) {
         })
             .then(r => r.json())
             .then((updatedProduct) => {
-                setFormData({
-                    name: "",
-                    size: "",
-                    buying_price: "",
-                    quantity: "",
-                    selling_price: "",
-                    category: "",
-                    expiry: "",
-                });
                 setSelectedId(null);
 
                 // Update the product in the products array
@@ -81,7 +104,7 @@ function ProductsContainer({ products, setProducts }) {
         return (
         <div 
           key= {item.id}
-          onClick={() => handleProductClick(item.id)}>
+          onClick={(event) => handleProductClick(item.id, event)} >
             <OneProduct products={products} setProducts={setProducts}  id = {item.id} name={item.name} size= {item.size} selling_price={item.selling_price} quantity={item.quantity}/>
             <button onClick={() => deleteProduct(item.id)}>Delete</button>
 
