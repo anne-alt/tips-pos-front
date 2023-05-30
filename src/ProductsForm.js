@@ -13,10 +13,15 @@ function ProductsForm({products, setProducts}){
     })
 
     function handleChange(event) {
+      if (event.target.name === "buying_price") {
+        const selling_price = parseFloat(event.target.value) * 1.2; // Calculate selling price as 120% of buying price
+        setFormData({ ...formData, [event.target.name]: event.target.value, selling_price });
+      } else {
         setFormData({
           ...formData,
           [event.target.name]: event.target.value,
         });
+      }
       }
 
       function handleSubmit(event){
@@ -68,7 +73,7 @@ function ProductsForm({products, setProducts}){
                  className="formbox"
                 />
                 <input
-                 type="input-text"
+                 type="number"
                  name="buying_price"
                  onChange={handleChange}
                  value={formData.buying_price}
@@ -76,15 +81,16 @@ function ProductsForm({products, setProducts}){
                  className="formbox"
                 />
                 <input
-                 type="input-text"
+                 type="number"
                  name="selling_price"
                  onChange={handleChange}
                  value={formData.selling_price}
                  placeholder="selling price.."
+                 readOnly
                  className="formbox"
                 />
                 <input
-                 type="input-text"
+                 type="number"
                  name="quantity"
                  onChange={handleChange}
                  value={formData.quantity}

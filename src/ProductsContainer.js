@@ -16,10 +16,15 @@ function ProductsContainer({ products, setProducts }) {
     const [selectedId, setSelectedId] = useState(null);
 
     function handleChange(event) {
-        setFormData({
+        if (event.target.name === "buying_price") {
+          const selling_price = parseFloat(event.target.value) * 1.2; // Calculate selling price as 120% of buying price
+          setFormData({ ...formData, [event.target.name]: event.target.value, selling_price });
+        } else {
+          setFormData({
             ...formData,
             [event.target.name]: event.target.value,
-        });
+          });
+        }
     }
 
     const handleProductClick = (productId, event) => {
@@ -155,6 +160,7 @@ function ProductsContainer({ products, setProducts }) {
                  onChange={handleChange}
                  value={formData.selling_price}
                  placeholder="product selling price.."
+                 readOnly
                 />
                 <br />
                 <label htmlFor="formData.category"> Category: </label>
