@@ -5,31 +5,64 @@ import SearchProducts from "./SearchProducts";
 function ReceiptsForm({ receipts, setReceipts, products }) {
   const [formData, setFormData] = useState({
     customer_name: "",
-    product_id: "",
-    quantity: "",
-    total: "",
     cash: "",
     mpesa: "",
+    selectedProduct: null,
+    selectedProducts: [],
   });
-  const [selectedProduct, setSelectedProduct] = useState(null);
   const [searchProducts, setSearchProducts] = useState("");
+  const [calculatedTotal, setCalculatedTotal] = useState(0);
 
   const handleInputChange = (event) => {
-    setFormData({ ...formData, [event.target.name]: event.target.value });
+    const { name, value } = event.target;
+    setFormData({ ...formData, [name]: value });
+    if (name === "quantity") {
+      calculateTotal(formData.selectedProduct, value);
+    }
   };
 
   const handleProductSelect = (productId) => {
-    setSelectedProduct(productId);
+    const selectedProduct = products.find((product) => product.id === productId);
+    setFormData({ ...formData, selectedProduct });
+    calculateTotal(selectedProduct, formData.quantity);
   };
 
   const handleAddProduct = () => {
-    setFormData({ ...formData, product_id: selectedProduct });
+    const { selectedProduct, selectedProducts } = formData;
+    if (selectedProduct) {
+      const updatedSelectedProducts = [...selectedProducts, selectedProduct];
+      setFormData({
+        ...formData,
+        selectedProduct: null,
+        selectedProducts: updatedSelectedProducts,
+      });
+      calculateTotal(null, formData.quantity);
+    }
+  };
+
+  const handleRemoveProduct = (productId) => {
+    const updatedSelectedProducts = formData.selectedProducts.filter(
+      (product) => product.id !== productId
+    );
+    setFormData({ ...formData, selectedProducts: updatedSelectedProducts });
+    calculateTotal(null, formData.quantity);
+  };
+
+  const calculateTotal = (product, quantity) => {
+    if (product && quantity) {
+      const totalPrice = product.selling_price * quantity;
+      setCalculatedTotal(totalPrice);
+    } else {
+      setCalculatedTotal(0);
+    }
   };
 
   function handleSubmit(event) {
     event.preventDefault();
 
-    const newReceipt = { ...formData };
+    const { selectedProduct, selectedProducts, ...receiptData } = formData;
+    const productIds = selectedProducts.map((product) => product.id);
+    const newReceipt = { ...receiptData, product_ids: productIds };
 
     fetch("/receipts", {
       method: "POST",
@@ -42,19 +75,18 @@ function ReceiptsForm({ receipts, setReceipts, products }) {
       .then((newReceipt) => {
         setFormData({
           customer_name: "",
-          product_id: "",
-          quantity: "",
-          total: "",
           cash: "",
           mpesa: "",
+          selectedProduct: null,
+          selectedProducts: [],
         });
-        setSelectedProduct(null);
         const allReceipts = [...receipts, newReceipt];
         setReceipts(allReceipts);
       });
   }
+
   const searcher = products.filter((item) =>
-    item.name.includes(searchProducts)
+    item.name.toLowerCase().includes(searchProducts.toLowerCase())
   );
 
   const rows = searcher.map((item) => {
@@ -67,10 +99,45 @@ function ReceiptsForm({ receipts, setReceipts, products }) {
           selling_price={item.selling_price}
           quantity={item.quantity}
         />
-        <button onClick={() => handleProductSelect(item.id)}>Select Product</button>
+        <button onClick={() => handleProductSelect(item.id)}>
+          Select Product
+        </button>
       </div>
     );
   });
+
+  const selectedProductsRows = formData.selectedProducts.map((product) => (
+    <div key={product.id}>
+      <OneProduct
+        id={product.id}
+        name={product.name}
+        size={product.size}
+        selling_price={product.selling_price}
+        quantity={product.quantity}
+      />
+      <button onClick={() => handleRemoveProduct(product.id)}>
+        Remove Product
+      </button>
+      <label htmlFor={`quantity-${product.id}`}>Quantity:</label>
+      <input
+        type="number"
+        id={`quantity-${product.id}`}
+        value={product.quantity}
+        onChange={(e) => handleQuantityChange(product.id, e.target.value)}
+      />
+    </div>
+  ));
+
+  const handleQuantityChange = (productId, quantity) => {
+    const updatedSelectedProducts = formData.selectedProducts.map((product) => {
+      if (product.id === productId) {
+        return { ...product, quantity: quantity };
+      }
+      return product;
+    });
+    setFormData({ ...formData, selectedProducts: updatedSelectedProducts });
+    calculateTotal(null, formData.quantity);
+  };
 
   return (
     <div>
@@ -84,35 +151,14 @@ function ReceiptsForm({ receipts, setReceipts, products }) {
           onChange={handleInputChange}
         />
 
-        <label htmlFor="product_id">Product ID:</label>
-        <input
-          type="text"
-          name="product_id"
-          value={formData.product_id}
-          onChange={handleInputChange}
-          readOnly
-        />
-
-        <button type="button" onClick={handleAddProduct}>
-          Add Product
-        </button>
-
-        {selectedProduct && (
+        {formData.selectedProduct && (
           <>
-            <label htmlFor="quantity">Quantity:</label>
-            <input
-              type="number"
-              name="quantity"
-              value={formData.quantity}
-              onChange={handleInputChange}
-            />
-
             <label htmlFor="total">Total:</label>
             <input
               type="number"
               name="total"
-              value={formData.total}
-              onChange={handleInputChange}
+              value={calculatedTotal}
+              readOnly
             />
 
             <label htmlFor="cash">Cash:</label>
@@ -133,7 +179,7 @@ function ReceiptsForm({ receipts, setReceipts, products }) {
           </>
         )}
 
-        {!selectedProduct && (
+        {!formData.selectedProduct && (
           <>
             <SearchProducts
               searchProducts={searchProducts}
@@ -142,6 +188,8 @@ function ReceiptsForm({ receipts, setReceipts, products }) {
             {rows}
           </>
         )}
+
+        {selectedProductsRows}
 
         <button type="submit">Submit</button>
       </form>
